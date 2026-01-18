@@ -10,6 +10,18 @@ function Book(id, title, author, pages, haveRead) {
   this.haveRead = haveRead;
 }
 
+Book.prototype.readed = function () {
+  const readBtn = document.createElement("input");
+  readBtn.type = "checkbox";
+  readBtn.checked = this.haveRead;
+
+  readBtn.addEventListener("change", () => {
+    this.haveRead = readBtn.checked;
+  });
+
+  return readBtn;
+};
+
 //Function to add the book in the array
 function addBookToLibrary(title, author, pages, haveRead) {
   const book = new Book(crypto.randomUUID(), title, author, pages, haveRead);
@@ -26,7 +38,6 @@ const addLbr = document.querySelector(".add-lbr");
 const bookTitle = document.querySelector("#title");
 const bookAuthor = document.querySelector("#author");
 const bookPages = document.querySelector("#pages");
-const bookRead = document.querySelector("#read");
 
 //Show and hide the book form
 addBtn.addEventListener("click", function () {
@@ -39,12 +50,7 @@ addBtn.addEventListener("click", function () {
 
 //Calls the addBookToLibrary function when addLbr is clicked
 addLbr.addEventListener("click", function () {
-  addBookToLibrary(
-    bookTitle.value,
-    bookAuthor.value,
-    bookPages.value,
-    bookRead.value
-  );
+  addBookToLibrary(bookTitle.value, bookAuthor.value, bookPages.value, false);
 
   console.log(myLibrary);
 
@@ -52,7 +58,6 @@ addLbr.addEventListener("click", function () {
   bookTitle.value = "";
   bookAuthor.value = "";
   bookPages.value = "";
-  bookRead.value = "";
 
   //Hide the form
   forms.classList.add("book-form");
@@ -63,13 +68,22 @@ addLbr.addEventListener("click", function () {
   for (let i = 0; i < myLibrary.length; i++) {
     const newDiv = document.createElement("div");
     newDiv.classList.add("book");
-    newDiv.textContent += `
-            Id: ${myLibrary[i].id} 
-            Title: ${myLibrary[i].title}
-            Author: ${myLibrary[i].author} 
-            Pages: ${myLibrary[i].pages}
-            Have you read?: ${myLibrary[i].haveRead} 
-        `;
+
+    const info = document.createElement("p");
+    info.textContent = `
+      Id: ${myLibrary[i].id};
+      Title: ${myLibrary[i].title};
+      Author: ${myLibrary[i].author};
+      Pages: ${myLibrary[i].pages};
+    `;
+
+    const readCheckbox = myLibrary[i].readed();
+    const readLabel = document.createElement("label");
+    readLabel.textContent = "Have you read? ";
+    newDiv.appendChild(readLabel);
+    newDiv.appendChild(readCheckbox);
+
+    newDiv.appendChild(info);
 
     newDiv.dataset.id = myLibrary[i].id;
 
